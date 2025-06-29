@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RaketaStars</title>
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- Шрифты для эмодзи -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap" rel="stylesheet">
+    
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
+    <!-- Особенные эффекты -->
+    <style>
+        /* Анимированные частицы для фона */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        .particle {
+            position: absolute;
+            font-size: 12px;
+            opacity: 0.3;
+            animation: float 8s infinite linear;
+        }
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.3; }
+            90% { opacity: 0.3; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+        
+        /* Градиентный текст для заголовков */
+        .gradient-text {
+            background: linear-gradient(45deg, #6c63ff, #ff6b6b, #4ecdc4);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 3s ease-in-out infinite;
+        }
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        /* Пульсирующие эмодзи */
+        .emoji-pulse {
+            animation: emojiPulse 2s ease-in-out infinite;
+            display: inline-block;
+        }
+        @keyframes emojiPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Анимированные частицы -->
+    <div class="particles">
+        <div class="particle" style="left: 10%; animation-delay: 0s;">⭐</div>
+        <div class="particle" style="left: 20%; animation-delay: 1s;">🚀</div>
+        <div class="particle" style="left: 30%; animation-delay: 2s;">💎</div>
+        <div class="particle" style="left: 40%; animation-delay: 3s;">⭐</div>
+        <div class="particle" style="left: 50%; animation-delay: 4s;">🌟</div>
+        <div class="particle" style="left: 60%; animation-delay: 5s;">🚀</div>
+        <div class="particle" style="left: 70%; animation-delay: 6s;">💫</div>
+        <div class="particle" style="left: 80%; animation-delay: 7s;">⭐</div>
+        <div class="particle" style="left: 90%; animation-delay: 0.5s;">🌠</div>
+    </div>
+    
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <div class="rocket">🚀</div>
+                <h1>RaketaStars</h1>
+            </div>
+            <div class="score-container">
+                <div class="stars-count">
+                    <span class="star-icon">⭐</span>
+                    <span id="stars-count">0</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- Секция игры -->
+            <section class="content-section active" id="game-section">
+                <div class="welcome-section">
+                    <h2>Добро пожаловать в RaketaStars!</h2>
+                    <p>Собирайте звезды, запускайте ракеты и исследуйте космос!</p>
+                </div>
+
+                <div class="game-area">
+                    <div class="star-field">
+                        <div class="star star-1">⭐</div>
+                        <div class="star star-2">⭐</div>
+                        <div class="star star-3">⭐</div>
+                        <div class="star star-4">⭐</div>
+                        <div class="star star-5">⭐</div>
+                    </div>
+                    
+                    <div class="rocket-launch-area">
+                        <button id="launch-btn" class="launch-button">
+                            <span class="rocket-emoji">🚀</span>
+                            <span class="btn-text">Запустить ракету</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="stats-section">
+                    <div class="stat-card">
+                        <div class="stat-icon">🎯</div>
+                        <div class="stat-info">
+                            <h3>Запусков</h3>
+                            <p id="launches-count">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🏆</div>
+                        <div class="stat-info">
+                            <h3>Рекорд</h3>
+                            <p id="best-score">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🌟</div>
+                        <div class="stat-info">
+                            <h3>Уровень</h3>
+                            <p id="level">1</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">💰</div>
+                        <div class="stat-info">
+                            <h3>Выведено</h3>
+                            <p id="total-withdrawn">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Быстрые действия -->
+                <div class="quick-actions">
+                    <h3>⚡ Быстрые действия</h3>
+                    <div class="action-buttons">
+                        <button id="withdraw-btn" class="action-btn withdraw">
+                            <span class="btn-icon">💰</span>
+                            <div class="btn-info">
+                                <span>Вывести звезды</span>
+                                <small>Мин. 100 ⭐</small>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- Секция рефералов -->
+            <section class="content-section" id="referrals-section">
+                <div class="section-header">
+                    <h2>👥 Реферальная программа</h2>
+                    <p>Приглашайте друзей и получайте звезды!</p>
+                </div>
+
+                <div class="referral-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">👨‍👩‍👧‍👦</div>
+                        <div class="stat-info">
+                            <h3>Приглашено</h3>
+                            <p id="referrals-count">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⭐</div>
+                        <div class="stat-info">
+                            <h3>Заработано</h3>
+                            <p id="referral-earnings">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="referral-info">
+                    <h3>💰 Награды за приглашения</h3>
+                    <div class="reward-grid">
+                        <div class="reward-card">
+                            <div class="reward-icon">👤</div>
+                            <div class="reward-info">
+                                <h4>Обычный друг</h4>
+                                <p class="reward-amount">50 ⭐</p>
+                            </div>
+                        </div>
+                        <div class="reward-card premium">
+                            <div class="reward-icon">👑</div>
+                            <div class="reward-info">
+                                <h4>Друг с Telegram Premium</h4>
+                                <p class="reward-amount">150 ⭐</p>
+                            </div>
+                        </div>
+                        <div class="reward-card bot-premium">
+                            <div class="reward-icon">🚀</div>
+                            <div class="reward-info">
+                                <h4>С премиумом бота → обычный</h4>
+                                <p class="reward-amount">500 ⭐</p>
+                            </div>
+                        </div>
+                        <div class="reward-card bot-premium-plus">
+                            <div class="reward-icon">💎</div>
+                            <div class="reward-info">
+                                <h4>С премиумом бота → Telegram Premium</h4>
+                                <p class="reward-amount">1500 ⭐</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="referral-link">
+                    <h3>🔗 Ваша реферальная ссылка</h3>
+                    <div class="link-container">
+                        <input type="text" id="referral-link" readonly value="https://lumo-interactive-corparation.github.io/RaketaStars/?ref=user123456">
+                        <button class="copy-btn" id="copy-referral">📋</button>
+                    </div>
+                    <button class="share-btn" id="share-referral">
+                        <span class="btn-icon">📤</span>
+                        Поделиться ссылкой
+                    </button>
+                </div>
+
+                <div class="referral-list">
+                    <h3>📝 Приглашенные друзья</h3>
+                    <div id="referrals-list" class="friends-list">
+                        <div class="empty-state">
+                            <div class="empty-icon">👥</div>
+                            <p>Пока нет приглашенных друзей</p>
+                            <small>Поделитесь ссылкой, чтобы получить первые звезды!</small>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Секция заданий -->
+            <section class="content-section" id="tasks-section">
+                <div class="section-header">
+                    <h2>📋 Задания</h2>
+                    <p>Выполняйте задания и получайте звезды!</p>
+                </div>
+
+                <div class="tasks-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-info">
+                            <h3>Выполнено</h3>
+                            <p id="completed-tasks">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⭐</div>
+                        <div class="stat-info">
+                            <h3>Заработано</h3>
+                            <p id="tasks-earnings">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tasks-list">
+                    <div class="tasks-header">
+                        <h3 class="gradient-text">
+                            <span class="emoji-pulse">🎯</span> Доступные задания
+                        </h3>
+                        <p class="tasks-subtitle">Выполните задания и получите награды!</p>
+                    </div>
+                    <div class="task-item" data-task="subscribe-channel-1">
+                        <div class="task-icon">📺</div>
+                        <div class="task-info">
+                            <h4>Подписаться на канал</h4>
+                            <span class="task-reward">+100 ⭐</span>
+                        </div>
+                        <button class="task-btn" data-action="subscribe">Подписаться</button>
+                    </div>
+                    
+                    <div class="task-item" data-task="subscribe-channel-2">
+                        <div class="task-icon">🚀</div>
+                        <div class="task-info">
+                            <h4>Подписаться на канал</h4>
+                            <span class="task-reward">+150 ⭐</span>
+                        </div>
+                        <button class="task-btn" data-action="subscribe">Подписаться</button>
+                    </div>
+                    
+                    <div class="task-item" data-task="subscribe-channel-3">
+                        <div class="task-icon">💎</div>
+                        <div class="task-info">
+                            <h4>Подписаться на премиум канал</h4>
+                            <span class="task-reward">+300 ⭐</span>
+                        </div>
+                        <button class="task-btn" data-action="subscribe">Подписаться</button>
+                    </div>
+                    
+                    <div class="task-item" data-task="invite-friends">
+                        <div class="task-icon">👥</div>
+                        <div class="task-info">
+                            <h4>Пригласить 5 друзей</h4>
+                            <p>Поделитесь реферальной ссылкой</p>
+                            <span class="task-reward">+500 ⭐</span>
+                        </div>
+                        <button class="task-btn" data-action="invite">Пригласить</button>
+                    </div>
+                    
+                    <div class="task-item" data-task="daily-launch">
+                        <div class="task-icon">🎯</div>
+                        <div class="task-info">
+                            <h4>Ежедневный запуск</h4>
+                            <p>Запустите ракету сегодня</p>
+                            <span class="task-reward">+50 ⭐</span>
+                        </div>
+                        <button class="task-btn" data-action="launch">Запустить</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Секция премиума -->
+            <section class="content-section" id="premium-section">
+                <div class="section-header">
+                    <h2>👑 Премиум подписка</h2>
+                    <p>Получайте больше звезд и эксклюзивные преимущества!</p>
+                </div>
+
+                <div class="premium-status-section">
+                    <div class="premium-status-card">
+                        <div class="premium-icon">👑</div>
+                        <div class="premium-details">
+                            <h4>Статус</h4>
+                            <p id="premium-status" class="premium-inactive">Неактивен</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="premium-benefits">
+                    <h3>✨ Преимущества премиума</h3>
+                    <div class="benefits-grid">
+                        <div class="benefit-item">
+                            <div class="benefit-icon">🚀</div>
+                            <div class="benefit-text">
+                                <h4>Больше звезд</h4>
+                                <p>50-599 звезд за запуск</p>
+                            </div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-icon">👥</div>
+                            <div class="benefit-text">
+                                <h4>Реферальные бонусы</h4>
+                                <p>До 1500 звезд за друга</p>
+                            </div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-icon">🎯</div>
+                            <div class="benefit-text">
+                                <h4>Эксклюзивные задания</h4>
+                                <p>Больше возможностей</p>
+                            </div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-icon">⭐</div>
+                            <div class="benefit-text">
+                                <h4>Бонусные звезды</h4>
+                                <p>Случайные подарки</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="premium-pricing">
+                    <h3>💎 Планы подписки</h3>
+                    <div class="pricing-grid">
+                        <div class="price-card">
+                            <div class="price-icon">📅</div>
+                            <h4>Месяц</h4>
+                            <div class="price">189 ⭐</div>
+                            <p class="price-note">Telegram Stars</p>
+                            <button id="premium-month-btn" class="premium-btn">Купить</button>
+                        </div>
+                        <div class="price-card recommended">
+                            <div class="price-badge">Выгодно!</div>
+                            <div class="price-icon">🗓️</div>
+                            <h4>Год</h4>
+                            <div class="price">2268 ⭐</div>
+                            <p class="price-note">Telegram Stars</p>
+                            <small class="savings">Экономия 0 Telegram Stars!</small>
+                            <button id="premium-year-btn" class="premium-btn">Купить</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Секция вывода -->
+            <section class="content-section" id="withdraws-section">
+                <div class="section-header">
+                    <h2>💰 Вывод средств</h2>
+                    <p>Конвертируйте звезды в реальные награды!</p>
+                </div>
+
+                <div class="withdraw-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">⭐</div>
+                        <div class="stat-info">
+                            <h3>Доступно</h3>
+                            <p id="available-stars">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">💰</div>
+                        <div class="stat-info">
+                            <h3>Выведено</h3>
+                            <p id="total-withdrawn-display">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="withdraw-info">
+                    <h3>ℹ️ Условия вывода</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-icon">💯</div>
+                            <div class="info-text">
+                                <h4>Минимум</h4>
+                                <p>100 звезд</p>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-icon">⚡</div>
+                            <div class="info-text">
+                                <h4>Обработка</h4>
+                                <p>1-24 часа</p>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-icon">🔒</div>
+                            <div class="info-text">
+                                <h4>Безопасность</h4>
+                                <p>100% гарантия</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="withdraw-action">
+                    <button id="withdraw-btn" class="action-btn withdraw">
+                        <span class="btn-icon">💰</span>
+                        <span class="btn-info">
+                            <strong>Вывести звезды</strong>
+                            <small>Минимум 100 ⭐</small>
+                        </span>
+                    </button>
+                </div>
+
+                <div class="withdraw-history">
+                    <h3>📜 История выводов</h3>
+                    <div id="withdraw-history-list" class="history-list">
+                        <div class="empty-state">
+                            <div class="empty-icon">💰</div>
+                            <p>Пока нет выводов</p>
+                            <small>Соберите 100 звезд для первого вывода!</small>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Секция достижений -->
+            <section class="content-section" id="achievements-section">
+                <div class="section-header">
+                    <h2>🏆 Достижения</h2>
+                    <p>Ваши успехи в освоении космоса</p>
+                </div>
+
+                <div class="achievements-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">🎯</div>
+                        <div class="stat-info">
+                            <h3>Получено</h3>
+                            <p id="unlocked-achievements">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🔓</div>
+                        <div class="stat-info">
+                            <h3>Доступно</h3>
+                            <p id="total-achievements">8</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="achievements-progress">
+                    <h3>📊 Прогресс</h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="achievements-progress-bar" style="width: 0%"></div>
+                        <span class="progress-text" id="achievements-progress-text">0%</span>
+                    </div>
+                </div>
+
+                <div class="achievements-list">
+                    <h3>🏅 Ваши достижения</h3>
+                    <div class="achievements-grid">
+                        <div class="achievement locked" data-achievement="first-launch">
+                            <div class="achievement-icon">🚀</div>
+                            <div class="achievement-name">Первый запуск</div>
+                            <div class="achievement-desc">Запустите свою первую ракету</div>
+                        </div>
+                        <div class="achievement locked" data-achievement="star-collector">
+                            <div class="achievement-icon">⭐</div>
+                            <div class="achievement-name">Коллекционер звезд</div>
+                            <div class="achievement-desc">Соберите 100 звезд</div>
+                        </div>
+                        <div class="achievement locked" data-achievement="rocket-master">
+                            <div class="achievement-icon">🏆</div>
+                            <div class="achievement-name">Мастер ракет</div>
+                            <div class="achievement-desc">Запустите 50 ракет</div>
+                        </div>
+                        <div class="achievement locked" data-achievement="space-explorer">
+                            <div class="achievement-icon">🌌</div>
+                            <div class="achievement-name">Исследователь космоса</div>
+                            <div class="achievement-desc">Достигните 10 уровня</div>
+                        </div>
+                        <div class="achievement locked" data-achievement="first-withdrawal">
+                            <div class="achievement-icon">💰</div>
+                            <div class="achievement-name">Первый вывод</div>
+                            <div class="achievement-desc">Выведите первые звезды</div>
+                        </div>
+                        <div class="achievement locked" data-achievement="premium-user">
+                            <div class="achievement-icon">👑</div>
+                            <div class="achievement-name">Премиум пользователь</div>
+                            <div class="achievement-desc">Активируйте премиум подписку</div>
+                        </div>
+                        <div class="achievement locked" data-achievement="referral-master">
+                            <div class="achievement-icon">👥</div>
+                            <div class="achievement-name">Реферал мастер</div>
+                            <div class="achievement-desc">Пригласите 10 друзей</div>
+                        </div>
+                        <div class="achievement locked" data-achievement="task-completer">
+                            <div class="achievement-icon">📋</div>
+                            <div class="achievement-name">Исполнитель заданий</div>
+                            <div class="achievement-desc">Выполните все задания</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <div class="loading-overlay" id="loading-overlay">
+            <div class="loading-spinner">
+                <div class="rocket-loading">🚀</div>
+                <p>Подготовка к запуску...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Нижнее мобильное меню -->
+    <nav class="bottom-navigation" id="bottom-navigation">
+        <a href="#game" class="nav-item active" data-section="game">
+            <div class="nav-icon">🎮</div>
+            <div class="nav-text">Игра</div>
+        </a>
+        <a href="#referrals" class="nav-item" data-section="referrals">
+            <div class="nav-icon">👥</div>
+            <div class="nav-text">Рефералы</div>
+        </a>
+        <a href="#tasks" class="nav-item" data-section="tasks">
+            <div class="nav-icon">📋</div>
+            <div class="nav-text">Задания</div>
+        </a>
+        <a href="#premium" class="nav-item" data-section="premium">
+            <div class="nav-icon">👑</div>
+            <div class="nav-text">Премиум</div>
+        </a>
+        <a href="#achievements" class="nav-item" data-section="achievements">
+            <div class="nav-icon">🏆</div>
+            <div class="nav-text">Достижения</div>
+        </a>
+    </nav>
+
+    <script src="script.js"></script>
+</body>
+</html> 

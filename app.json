@@ -1,0 +1,75 @@
+{
+  "name": "RaketaStars",
+  "version": "1.0.0",
+  "description": "🚀 Мини-приложение для Telegram на космическую тематику",
+  "author": "RaketaStars Team",
+  "keywords": ["telegram", "mini-app", "game", "space", "stars", "rocket"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/raketastars.git"
+  },
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 8000",
+    "deploy": "echo 'Deploy to your hosting service'"
+  },
+  "telegram": {
+    "short_name": "raketastars",
+    "name": "RaketaStars",
+    "description": "Собирайте звезды и запускайте ракеты в космосе! 🚀⭐",
+    "icon": "🚀",
+    "categories": ["games", "entertainment"],
+    "features": [
+      "Сбор звезд",
+      "Запуск ракет", 
+      "Система достижений",
+      "Статистика игрока",
+      "Красивые анимации"
+    ]
+  },
+  "manifest": {
+    "name": "RaketaStars",
+    "short_name": "RaketaStars",
+    "description": "Космическая игра для Telegram",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#667eea",
+    "theme_color": "#764ba2",
+    "icons": [
+      {
+        "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9InVybCgjZ3JhZGllbnQwX2xpbmVhcikiLz4KPHN0eWxlPgojZ3JhZGllbnQwX2xpbmVhciB7CiAgZ3JhZGllbnQ6IGxpbmVhcigxMzVkZWcsICM2NjdlZWEgMCUsICM3NjRiYTIgMTAwJSk7Cn0KPC9zdHlsZT4KPHN0eWxlPgoudGV4dCB7CiAgZm9udDogNDBweCBzYW5zLXNlcmlmOwogIGZpbGw6ICNmZmZmZmY7Cn0KPC9zdHlsZT4KPHRleHQgeD0iMzIiIHk9IjQwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0idGV4dCI+8J+agDwvdGV4dD4KPC9zdmc+",
+        "sizes": "64x64",
+        "type": "image/svg+xml"
+      }
+    ]
+  },
+  "browser_support": {
+    "chrome": ">=60",
+    "firefox": ">=55",
+    "safari": ">=12",
+    "edge": ">=79"
+  },
+  "hosting": {
+    "github_pages": {
+      "enabled": true,
+      "build_command": "echo 'No build needed'"
+    },
+    "netlify": {
+      "enabled": true,
+      "publish": "./",
+      "build": {
+        "command": "echo 'No build needed'",
+        "publish": "./"
+      }
+    },
+    "vercel": {
+      "enabled": true,
+      "builds": [
+        {
+          "src": "index.html",
+          "use": "@vercel/static"
+        }
+      ]
+    }
+  }
+} 
